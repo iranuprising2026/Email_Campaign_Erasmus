@@ -193,18 +193,22 @@ function openMail(mode) {
         return;
     }
 
-    // Split emails properly
-    const allEmails = TO_EMAIL.split(",").map(e => e.trim());
+    // 1️⃣ Clean and merge ALL emails properly
+    const toList = TO_EMAIL.replace(/\s/g, "").split(",");
+    const ccList = CC_EMAIL.replace(/\s/g, "").split(",");
 
-    // 1️⃣ First email = TO
+    const allEmails = [...toList, ...ccList];
+
+    // 2️⃣ First = TO
     const to = allEmails[0];
 
-    // 2️⃣ Rest = CC
+    // 3️⃣ Rest = CC
     const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
     const separator = (mode === 'mobile' || isMobile) ? "," : ";";
-    const cc = allEmails.slice(1).join(separator) + (CC_EMAIL ? separator + CC_EMAIL : "");
 
-    // 3️⃣ 🔥 ORIGINAL WORKING STRUCTURE (very important)
+    const cc = allEmails.slice(1).join(separator);
+
+    // 4️⃣ KEEP your original working structure
     const mailtoUrl =
 `mailto:${encodeURIComponent(to)}?to=${encodeURIComponent(to)}&cc=${encodeURIComponent(cc)}&subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
 
