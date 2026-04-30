@@ -239,8 +239,8 @@ function openMail(mode) {
 function copyAll() {
     const subject = document.getElementById("subject").value;
     const body = document.getElementById("body").value;
-    const to = document.getElementById("toField").value;
-    const cc = document.getElementById("ccField").value;
+    const to = document.getElementById("toField")?.value || "";
+    const cc = document.getElementById("ccField")?.value || "";
 
     if (!subject) return alert("Generate email first!");
 
@@ -253,7 +253,7 @@ ${body}`;
 
     navigator.clipboard.writeText(cleanText);
 
-    alert("Copied email!");
+    alert("Copied to clipboard!");
 }
 
 </script>
