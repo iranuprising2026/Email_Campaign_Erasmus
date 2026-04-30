@@ -239,18 +239,21 @@ function openMail(mode) {
 function copyAll() {
     const subject = document.getElementById("subject").value;
     const body = document.getElementById("body").value;
+    const to = document.getElementById("toField").value;
+    const cc = document.getElementById("ccField").value;
 
     if (!subject) return alert("Generate email first!");
 
-    navigator.clipboard.writeText(
-`To: ${TO_EMAIL}
-CC: ${CC_EMAIL}
+    const cleanText =
+`To: ${to}
+CC: ${cc}
 Subject: ${subject}
 
-${body}`
-    );
+${body}`;
 
-    alert("Copied to clipboard!");
+    navigator.clipboard.writeText(cleanText);
+
+    alert("Copied email!");
 }
 
 </script>
