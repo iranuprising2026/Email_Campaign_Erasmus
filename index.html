@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Email Campaign Tool</title>
+
+<style>
+body {
+    font-family: Arial, sans-serif;
+    max-width: 700px;
+    margin: auto;
+    padding: 20px;
+    background: #f5f7fb;
+}
+
+h2 { text-align: center; }
+
+input, select, button, textarea {
+    width: 100%;
+    padding: 12px;
+    margin-top: 10px;
+    font-size: 16px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    box-sizing: border-box;
+}
+
+button {
+    background: #2b6cb0;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+    border: none;
+}
+
+button:hover {
+    background: #2c5282;
+}
+
+textarea {
+    height: 200px;
+}
+</style>
+</head>
+
+<body>
+
+<h2>Email Campaign Tool</h2>
+
+<input id="name" placeholder="Your name (optional)">
+
+<select id="version">
+    <option value="1">Version 1</option>
+    <option value="2">Version 2</option>
+    <option value="3">Version 3</option>
+    <option value="4">Version 4</option>
+    <option value="5">Version 5</option>
+</select>
+
+<button onclick="generatePreview()">Generate Preview</button>
+
+<h3>Subject</h3>
+<input id="subject" readonly>
+
+<h3>Email Body</h3>
+<textarea id="body" readonly></textarea>
+
+<button onclick="openGmail()">Open Gmail</button>
+
+<script>
+const TO_EMAIL = "admin@erasmusmc.nl";
+const CC_EMAIL = "nexus@nexus-instituut.nl";
+
+/* ✔️ SAMPLE CONTENT (replace later with real text) */
+const emails = {
+    1: {
+        subject: "Concern regarding upcoming event at Erasmus MC",
+        body: "Dear Erasmus MC team,\n\nMy name is [NAME]. I would like to express concern regarding the upcoming event.\n\nKind regards,\n[NAME]"
+    },
+    2: {
+        subject: "Request for review of invited speaker",
+        body: "Dear Erasmus MC,\n\nMy name is [NAME]. I respectfully request a review of the invited speaker for the upcoming event.\n\nKind regards,\n[NAME]"
+    },
+    3: {
+        subject: "Formal objection to scheduled talk",
+        body: "Dear Erasmus MC administration,\n\nI am [NAME]. I wish to formally object to the scheduled talk at your institution.\n\nKind regards,\n[NAME]"
+    },
+    4: {
+        subject: "Concerns regarding institutional reputation",
+        body: "Dear Erasmus MC,\n\nMy name is [NAME]. I am concerned about the potential reputational impact of this event.\n\nKind regards,\n[NAME]"
+    },
+    5: {
+        subject: "Urgent: request for reconsideration of event invitation",
+        body: "Dear Erasmus MC leadership,\n\nI am [NAME]. I urge you to reconsider the invitation for this event.\n\nKind regards,\n[NAME]"
+    }
+};
+
+function generatePreview() {
+    const name = document.getElementById("name").value || "Concerned participant";
+    const v = document.getElementById("version").value;
+
+    let subject = emails[v].subject;
+    let body = emails[v].body.replace(/\[NAME\]/g, name);
+
+    document.getElementById("subject").value = subject;
+    document.getElementById("body").value = body;
+}
+
+function openGmail() {
+    const subject = document.getElementById("subject").value;
+    const body = document.getElementById("body").value;
+
+    if (!subject) {
+        alert("Generate email first!");
+        return;
+    }
+
+    const url =
+`https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(TO_EMAIL)}&cc=${encodeURIComponent(CC_EMAIL)}&subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+
+    window.open(url, "_blank");
+}
+</script>
+
+</body>
+</html>
