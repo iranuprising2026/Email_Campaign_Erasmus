@@ -8,18 +8,20 @@
 <style>
 body {
     font-family: Arial, sans-serif;
-    max-width: 700px;
+    max-width: 800px;
     margin: auto;
-    padding: 20px;
+    padding: 16px;
     background: #f5f7fb;
 }
 
-h2 { text-align: center; }
+h2 { text-align: center; color: #1a365d; }
 
-input, select, button, textarea {
+label { font-weight: bold; display: block; margin-top: 12px; }
+
+input, select, textarea, button {
     width: 100%;
     padding: 12px;
-    margin-top: 10px;
+    margin-top: 8px;
     font-size: 16px;
     border-radius: 8px;
     border: 1px solid #ccc;
@@ -27,19 +29,17 @@ input, select, button, textarea {
 }
 
 button {
-    background: #2b6cb0;
-    color: white;
-    font-weight: bold;
     cursor: pointer;
-    border: none;
+    font-weight: bold;
 }
 
-button:hover {
-    background: #2c5282;
-}
+.btn-generate { background: #2b6cb0; color: white; border: none; }
+.btn-web { background: #2c5282; color: white; border: none; margin-top: 10px; }
+.btn-mobile { background: #38a169; color: white; border: none; margin-top: 10px; }
+.btn-copy { background: #718096; color: white; border: none; margin-top: 10px; }
 
 textarea {
-    height: 200px;
+    min-height: 200px;
 }
 </style>
 </head>
@@ -48,8 +48,10 @@ textarea {
 
 <h2>Email Campaign Tool</h2>
 
-<input id="name" placeholder="Your name (optional)">
+<label>Your Name (optional)</label>
+<input id="username" placeholder="Enter your name">
 
+<label>Choose Email Version</label>
 <select id="version">
     <option value="1">Version 1</option>
     <option value="2">Version 2</option>
@@ -58,46 +60,49 @@ textarea {
     <option value="5">Version 5</option>
 </select>
 
-<button onclick="generatePreview()">Generate Preview</button>
+<button class="btn-generate" onclick="generateEmail()">Generate Email</button>
 
-<h3>Subject</h3>
+<label>Subject</label>
 <input id="subject" readonly>
 
-<h3>Email Body</h3>
+<label>Body</label>
 <textarea id="body" readonly></textarea>
 
-<button onclick="openGmail()">Open Gmail</button>
+<button class="btn-web" onclick="openMail('web')">Open Email (Web / Outlook)</button>
+<button class="btn-mobile" onclick="openMail('mobile')">Open Email (Mobile / Gmail App)</button>
+<button class="btn-copy" onclick="copyAll()">Copy Email</button>
 
 <script>
+/* ✔️ RECIPIENTS (edit anytime) */
 const TO_EMAIL = "admin@erasmusmc.nl";
 const CC_EMAIL = "nexus@nexus-instituut.nl";
 
-/* ✔️ SAMPLE CONTENT (replace later with real text) */
+/* ✔️ SIMPLE EMAIL VERSIONS */
 const emails = {
     1: {
-        subject: "Concern regarding upcoming event at Erasmus MC",
-        body: "Dear Erasmus MC team,\n\nMy name is [NAME]. I would like to express concern regarding the upcoming event.\n\nKind regards,\n[NAME]"
+        subject: "Concern regarding upcoming event",
+        body: "Dear Erasmus MC,\n\nMy name is [NAME]. I would like to express concern regarding the upcoming event.\n\nKind regards,\n[NAME]"
     },
     2: {
         subject: "Request for review of invited speaker",
-        body: "Dear Erasmus MC,\n\nMy name is [NAME]. I respectfully request a review of the invited speaker for the upcoming event.\n\nKind regards,\n[NAME]"
+        body: "Dear Erasmus MC,\n\nMy name is [NAME]. I respectfully request a review of the invited speaker.\n\nKind regards,\n[NAME]"
     },
     3: {
-        subject: "Formal objection to scheduled talk",
-        body: "Dear Erasmus MC administration,\n\nI am [NAME]. I wish to formally object to the scheduled talk at your institution.\n\nKind regards,\n[NAME]"
+        subject: "Formal objection to event invitation",
+        body: "Dear Erasmus MC,\n\nMy name is [NAME]. I formally object to the upcoming event invitation.\n\nKind regards,\n[NAME]"
     },
     4: {
-        subject: "Concerns regarding institutional reputation",
-        body: "Dear Erasmus MC,\n\nMy name is [NAME]. I am concerned about the potential reputational impact of this event.\n\nKind regards,\n[NAME]"
+        subject: "Institutional concern regarding event",
+        body: "Dear Erasmus MC,\n\nMy name is [NAME]. I am concerned about the institutional implications of this event.\n\nKind regards,\n[NAME]"
     },
     5: {
-        subject: "Urgent: request for reconsideration of event invitation",
-        body: "Dear Erasmus MC leadership,\n\nI am [NAME]. I urge you to reconsider the invitation for this event.\n\nKind regards,\n[NAME]"
+        subject: "Urgent request for reconsideration",
+        body: "Dear Erasmus MC leadership,\n\nMy name is [NAME]. I urge you to reconsider this event invitation.\n\nKind regards,\n[NAME]"
     }
 };
 
-function generatePreview() {
-    const name = document.getElementById("name").value || "Concerned participant";
+function generateEmail() {
+    const name = document.getElementById("username").value || "Concerned participant";
     const v = document.getElementById("version").value;
 
     let subject = emails[v].subject;
@@ -107,19 +112,50 @@ function generatePreview() {
     document.getElementById("body").value = body;
 }
 
-function openGmail() {
+function openMail(mode) {
     const subject = document.getElementById("subject").value;
     const body = document.getElementById("body").value;
 
     if (!subject) {
-        alert("Generate email first!");
+        alert("Please generate email first!");
         return;
     }
 
-    const url =
-`https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(TO_EMAIL)}&cc=${encodeURIComponent(CC_EMAIL)}&subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    const name = document.getElementById("username").value || "Concerned participant";
+    const finalBody = body.replace(/\[NAME\]/g, name);
 
-    window.open(url, "_blank");
+    if (mode === "web") {
+        /* ✔️ Desktop / Outlook-style */
+        const url =
+`mailto:${encodeURIComponent(TO_EMAIL)}?cc=${encodeURIComponent(CC_EMAIL)}&subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(finalBody)}`;
+
+        window.location.href = url;
+    }
+
+    if (mode === "mobile") {
+        /* ✔️ Mobile Gmail / Mail app trigger */
+        const url =
+`mailto:${TO_EMAIL}?cc=${CC_EMAIL}&subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(finalBody)}`;
+
+        window.location.href = url;
+    }
+}
+
+function copyAll() {
+    const subject = document.getElementById("subject").value;
+    const body = document.getElementById("body").value;
+
+    if (!subject) return alert("Generate email first!");
+
+    navigator.clipboard.writeText(
+`To: ${TO_EMAIL}
+CC: ${CC_EMAIL}
+Subject: ${subject}
+
+${body}`
+    );
+
+    alert("Copied to clipboard!");
 }
 </script>
 
