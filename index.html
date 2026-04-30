@@ -194,8 +194,25 @@ function openMail(mode) {
     }
 
     // 1️⃣ Clean and merge ALL emails properly
-    const toList = TO_EMAIL.replace(/\s/g, "").split(",");
-    const ccList = CC_EMAIL.replace(/\s/g, "").split(",");
+// 1️⃣ Define main recipient
+const mainRecipient = "university.council@eur.nl";
+
+// 2️⃣ Build clean email list
+const allEmails = [
+    ...TO_EMAIL.replace(/\s/g, "").split(","),
+    ...CC_EMAIL.replace(/\s/g, "").split(",")
+];
+
+// 3️⃣ Remove main from CC list
+const ccList = allEmails.filter(email => email !== mainRecipient);
+
+// 4️⃣ Separator logic (keep your existing one if you want)
+const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+const separator = (mode === 'mobile' || isMobile) ? "," : ";";
+
+// 5️⃣ Final values
+const to = mainRecipient;
+const cc = ccList.join(separator);
 
     const allEmails = [...toList, ...ccList];
 
