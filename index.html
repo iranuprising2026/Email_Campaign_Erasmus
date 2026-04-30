@@ -186,34 +186,31 @@ function generateEmail() {
 
 function openMail(mode) {
     const subject = document.getElementById("subject").value;
-    let body = document.getElementById("body").value;
+    const body = document.getElementById("body").value;
 
     if (!subject) {
         alert("Please generate email first!");
         return;
     }
 
-    const name = document.getElementById("username").value || "Concerned participant";
-    const city = document.getElementById("city").value.trim();
+    // Split emails properly
+    const allEmails = TO_EMAIL.split(",").map(e => e.trim());
 
-    body = body.replace(/\[NAME\]/g, name);
-    body = body.replace(/\[CITY\]/g, city ? city : "");
+    // 1️⃣ First email = TO
+    const to = allEmails[0];
 
-    if (mode === "web") {
-        const url =
-`mailto:${encodeURIComponent(TO_EMAIL)}?cc=${encodeURIComponent(CC_EMAIL)}&subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    // 2️⃣ Rest = CC
+    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+    const separator = (mode === 'mobile' || isMobile) ? "," : ";";
+    const cc = allEmails.slice(1).join(separator) + (CC_EMAIL ? separator + CC_EMAIL : "");
 
-        window.location.href = url;
-    }
+    // 3️⃣ 🔥 ORIGINAL WORKING STRUCTURE (very important)
+    const mailtoUrl =
+`mailto:${encodeURIComponent(to)}?to=${encodeURIComponent(to)}&cc=${encodeURIComponent(cc)}&subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
 
-    if (mode === "mobile") {
-        const url =
-`mailto:${TO_EMAIL}?cc=${CC_EMAIL}&subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-
-        window.location.href = url;
-    }
+    window.location.href = mailtoUrl;
 }
-
+    
 function copyAll() {
     const subject = document.getElementById("subject").value;
     const body = document.getElementById("body").value;
