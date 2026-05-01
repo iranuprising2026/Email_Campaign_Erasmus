@@ -140,6 +140,22 @@ vs. Rob Malley's Invitation
 <button class="btn-mobile" onclick="openMail('mobile')">Open Email (Mobile / Gmail App)</button>
 <button class="btn-copy" onclick="copyAll()">Copy Email</button>
 
+    <p style="font-size:13px; color:#666; margin-top:10px;">
+⚠️ iPhone users: If Gmail does not open, use <b>Copy Email</b> and paste into your mail app.
+</p>
+
+<button onclick="selectEmailText()" style="
+    margin-top:8px;
+    background:#a0aec0;
+    color:white;
+    border:none;
+    padding:10px;
+    border-radius:8px;
+    cursor:pointer;
+">
+Select Email Text (iPhone fix)
+</button>
+
 <script>
 
 /* ✔️ RECIPIENTS */
@@ -239,21 +255,47 @@ function openMail(mode) {
 function copyAll() {
     const subject = document.getElementById("subject").value;
     const body = document.getElementById("body").value;
-    const to = document.getElementById("toField")?.value || "";
-    const cc = document.getElementById("ccField")?.value || "";
+    const to = document.getElementById("toField").value;
+    const cc = document.getElementById("ccField").value;
 
     if (!subject) return alert("Generate email first!");
 
-    const cleanText =
+    const text =
 `To: ${to}
 CC: ${cc}
 Subject: ${subject}
 
 ${body}`;
 
-    navigator.clipboard.writeText(cleanText);
+    // Try modern clipboard first
+    if (navigator.clipboard && window.isSecureContext) {
+        navigator.clipboard.writeText(text).then(() => {
+            alert("Copied to clipboard!");
+        }).catch(() => fallbackCopy(text));
+    } else {
+        fallbackCopy(text);
+    }
+}
 
-    alert("Copied to clipboard!");
+// 🔥 iOS fallback (THIS is the fix)
+function fallbackCopy(text) {
+    const textarea = document.createElement("textarea");
+    textarea.value = text;
+    textarea.style.position = "fixed"; // prevent scrolling
+    textarea.style.opacity = "0";
+
+    document.body.appendChild(textarea);
+    textarea.focus();
+    textarea.select();
+
+    try {
+        document.execCommand("copy");
+        alert("Copied (fallback works on iOS)!");
+    } catch (err) {
+        alert("Copy failed. Please copy manually.");
+    }
+
+    document.body.removeChild(textarea);
 }
 
 </script>
