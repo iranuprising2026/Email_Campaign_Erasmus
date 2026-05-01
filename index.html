@@ -153,7 +153,7 @@ vs. Rob Malley's Invitation
     border-radius:8px;
     cursor:pointer;
 ">
-Select Email Text (iPhone fix)
+Select and Copy Email Text (iPhone fix)
 </button>
 
 <script>
@@ -299,40 +299,13 @@ function fallbackCopy(text) {
 }
 
 function selectEmailText() {
-    const body = document.getElementById("body").value;
-    const subject = document.getElementById("subject").value;
-    const to = document.getElementById("toField").value;
-    const cc = document.getElementById("ccField").value;
+    const textarea = document.getElementById("body");
 
-    const fullText =
-`To: ${to}
-CC: ${cc}
-Subject: ${subject}
-
-${body}`;
-
-    const textarea = document.createElement("textarea");
-    textarea.value = fullText;
-
-    // iOS requires visible-ish element
-    textarea.style.position = "fixed";
-    textarea.style.top = "0";
-    textarea.style.left = "0";
-    textarea.style.width = "100%";
-    textarea.style.height = "200px";
-    textarea.style.opacity = "0.01";
-
-    document.body.appendChild(textarea);
-
+    textarea.removeAttribute("readonly"); // important
     textarea.focus();
-    textarea.setSelectionRange(0, textarea.value.length);
+    textarea.select();
 
-    alert("Text selected — tap and hold → Copy");
-
-    // remove after slight delay (important for iOS)
-    setTimeout(() => {
-        document.body.removeChild(textarea);
-    }, 2000);
+    alert("Text selected — press Copy");
 }
 
 </script>
